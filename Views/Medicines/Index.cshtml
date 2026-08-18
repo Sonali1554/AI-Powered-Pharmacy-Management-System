@@ -1,0 +1,67 @@
+@model IEnumerable<PharmacyManagementSystem.Models.Medicine>
+
+@{
+    ViewData["Title"] = "Medicines";
+}
+
+<h1>Medicines</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add Medicine</a>
+</p>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text"
+               name="searchString"
+               value="@ViewData["SearchString"]"
+               class="form-control"
+               placeholder="Search medicine, batch number or manufacturer" />
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Medicine Name</th>
+            <th>Category</th>
+            <th>Manufacturer</th>
+            <th>Batch Number</th>
+            <th>Expiry Date</th>
+            <th>Purchase Price</th>
+            <th>Selling Price</th>
+            <th>Quantity</th>
+            <th>Reorder Level</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MedicineName</td>
+                <td>@item.Category?.CategoryName</td>
+                <td>@item.Manufacturer</td>
+                <td>@item.BatchNumber</td>
+                <td>@item.ExpiryDate.ToString("dd-MM-yyyy")</td>
+                <td>@item.PurchasePrice</td>
+                <td>@item.SellingPrice</td>
+                <td>@item.Quantity</td>
+                <td>@item.ReorderLevel</td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-medicineid="@item.MedicineId">Edit</a> |
+
+                    <a asp-action="Details"
+                       asp-route-medicineid="@item.MedicineId">Details</a> |
+
+                    <a asp-action="Delete"
+                       asp-route-medicineid="@item.MedicineId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

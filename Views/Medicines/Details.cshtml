@@ -1,0 +1,92 @@
+@model PharmacyManagementSystem.Models.Medicine
+
+@{
+    ViewData["Title"] = "Medicine Details";
+}
+
+<h1>Medicine Details</h1>
+
+<div>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">
+            Medicine Name
+        </dt>
+        <dd class="col-sm-9">
+            @Model.MedicineName
+        </dd>
+
+        <dt class="col-sm-3">
+            Category
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Category?.CategoryName
+        </dd>
+
+        <dt class="col-sm-3">
+            Manufacturer
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Manufacturer
+        </dd>
+
+        <dt class="col-sm-3">
+            Batch Number
+        </dt>
+        <dd class="col-sm-9">
+            @Model.BatchNumber
+        </dd>
+
+        <dt class="col-sm-3">
+            Expiry Date
+        </dt>
+        <dd class="col-sm-9">
+            @Model.ExpiryDate.ToString("dd-MM-yyyy")
+        </dd>
+
+        <dt class="col-sm-3">
+            Purchase Price
+        </dt>
+        <dd class="col-sm-9">
+            @Model.PurchasePrice
+        </dd>
+
+        <dt class="col-sm-3">
+            Selling Price
+        </dt>
+        <dd class="col-sm-9">
+            @Model.SellingPrice
+        </dd>
+
+        <dt class="col-sm-3">
+            Quantity
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Quantity
+        </dd>
+
+        <dt class="col-sm-3">
+            Reorder Level
+        </dt>
+        <dd class="col-sm-9">
+            @Model.ReorderLevel
+        </dd>
+
+        <dt class="col-sm-3">
+            Description
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Description
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Edit"
+       asp-route-medicineid="@Model.MedicineId"
+       class="btn btn-primary">Edit</a>
+
+    <a asp-action="Index"
+       class="btn btn-secondary">Back to List</a>
+</div>
