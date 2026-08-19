@@ -1,0 +1,62 @@
+﻿@model IEnumerable<PharmacyManagmentSystem.Models.Sale>
+
+    @{
+    ViewData["Title"] = "Sales History";
+    }
+
+    <div class="container mt-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Sales & Billing</h2>
+
+            <a asp-action="Create" class="btn btn-primary">
+                + Create New Bill
+            </a>
+        </div>
+
+        @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No sales recorded yet.
+        </div>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Bill ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Subtotal</th>
+                    <th>Discount</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var sale in Model)
+                {
+                <tr>
+                    <td>@sale.SaleId</td>
+                    <td>@sale.Customer?.Name</td>
+                    <td>@sale.SaleDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>₹@sale.Subtotal.ToString("0.00")</td>
+                    <td>@sale.DiscountPercentage%</td>
+                    <td><strong>₹@sale.TotalAmount.ToString("0.00")</strong></td>
+                    <td>@sale.PaymentMethod</td>
+                    <td>
+                        <a asp-action="Details"
+                           asp-route-id="@sale.SaleId"
+                           class="btn btn-sm btn-info">
+                            View Bill
+                        </a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+    </div>

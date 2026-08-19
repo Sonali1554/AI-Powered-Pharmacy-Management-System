@@ -1,0 +1,119 @@
+﻿@model PharmacyManagmentSystem.Models.Sale
+
+@{
+    ViewData["Title"] = "Bill Details";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Pharmacy Invoice</h2>
+
+        <button onclick="window.print()"
+                class="btn btn-primary">
+            Print Invoice
+        </button>
+    </div>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <h4>Bill #@Model.SaleId</h4>
+
+            <p>
+                <strong>Date:</strong>
+                @Model.SaleDate.ToString("dd-MM-yyyy HH:mm")
+            </p>
+
+            <hr />
+
+            <h5>Customer Details</h5>
+
+            <p>
+                <strong>Name:</strong>
+                @Model.Customer?.Name
+            </p>
+
+            <p>
+                <strong>Phone:</strong>
+                @Model.Customer?.Phone
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                @Model.Customer?.Email
+            </p>
+
+            <hr />
+
+            <h5>Medicines</h5>
+
+            <table class="table table-bordered">
+
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model.SaleItems)
+                    {
+                    <tr>
+                        <td>@item.MedicineName</td>
+                        <td>@item.Quantity</td>
+                        <td>₹@item.UnitPrice.ToString("0.00")</td>
+                        <td>₹@item.TotalPrice.ToString("0.00")</td>
+                    </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+            <div class="text-end">
+
+                <p>
+                    <strong>Subtotal:</strong>
+                    ₹@Model.Subtotal.ToString("0.00")
+                </p>
+
+                <p>
+                    <strong>Discount:</strong>
+                    @Model.DiscountPercentage%
+                </p>
+
+                <p>
+                    <strong>Discount Amount:</strong>
+                    ₹@Model.DiscountAmount.ToString("0.00")
+                </p>
+
+                <h4>
+                    Total:
+                    ₹@Model.TotalAmount.ToString("0.00")
+                </h4>
+
+                <p>
+                    <strong>Payment:</strong>
+                    @Model.PaymentMethod
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <br />
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Back to Sales
+    </a>
+
+</div>
