@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PharmacyManagmentSystem.Models;
 
@@ -12,6 +12,8 @@ namespace PharmacyManagmentSystem.Data
         public DbSet<Sale> Sales { get; set; }
 
         public DbSet<SaleItem> SaleItems { get; set; }
+
+        public DbSet<Medicine> Medicines { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +43,11 @@ namespace PharmacyManagmentSystem.Data
 
             modelBuilder.Entity<SaleItem>()
                 .Property(s => s.TotalPrice)
+                .HasPrecision(18, 2);
+
+            // Medicine decimal fields
+            modelBuilder.Entity<Medicine>()
+                .Property(m => m.Price)
                 .HasPrecision(18, 2);
         }
     }

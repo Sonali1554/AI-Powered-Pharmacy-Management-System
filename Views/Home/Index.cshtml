@@ -1,8 +1,62 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Welcome";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <!-- Hero Section -->
+    <div class="row align-items-center mb-5 animate-fade-up">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <h1 class="display-3 fw-bold mb-3">
+                Manage your pharmacy with <span class="text-gradient">AI Intelligence</span>
+            </h1>
+            <p class="lead text-muted mb-4">
+                Nexus Pharmacy is the next-generation management system. Track sales, monitor medicine inventory, and view real-time predictive analytics instantly.
+            </p>
+            <div class="d-flex gap-3">
+                <a asp-controller="Sales" asp-action="Create" class="btn-nexus btn-lg">
+                    <i class="fa-solid fa-cart-shopping me-2"></i> Start Billing
+                </a>
+                <a asp-controller="Analytics" asp-action="Dashboard" class="btn-nexus-outline btn-lg">
+                    <i class="fa-solid fa-chart-line me-2"></i> View Analytics
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-6 text-center position-relative">
+            <!-- Decorative glowing orb behind image -->
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: rgba(0, 242, 254, 0.2); filter: blur(80px); border-radius: 50%; z-index: 0;"></div>
+            
+            <i class="fa-solid fa-staff-snake text-gradient" style="font-size: 14rem; position: relative; z-index: 1; filter: drop-shadow(0 0 30px rgba(0,242,254,0.4));"></i>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-md-4 mb-4 animate-fade-up delay-1">
+            <div class="glass-card p-4 h-100 text-center">
+                <div class="mb-3">
+                    <i class="fa-solid fa-bolt text-warning" style="font-size: 2.5rem; text-shadow: 0 0 15px rgba(255,193,7,0.5);"></i>
+                </div>
+                <h4 class="mb-2">Real-Time Sync</h4>
+                <p class="text-muted small">Every sale updates the analytics dashboard instantly using SignalR websockets.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4 animate-fade-up delay-2">
+            <div class="glass-card p-4 h-100 text-center">
+                <div class="mb-3">
+                    <i class="fa-solid fa-boxes-stacked text-primary" style="font-size: 2.5rem; text-shadow: 0 0 15px rgba(13,110,253,0.5);"></i>
+                </div>
+                <h4 class="mb-2">Smart Inventory</h4>
+                <p class="text-muted small">Keep track of medicines, stock levels, and pricing securely in our robust database.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4 animate-fade-up delay-3">
+            <div class="glass-card p-4 h-100 text-center">
+                <div class="mb-3">
+                    <i class="fa-solid fa-brain text-success" style="font-size: 2.5rem; text-shadow: 0 0 15px rgba(25,135,84,0.5);"></i>
+                </div>
+                <h4 class="mb-2">AI Insights</h4>
+                <p class="text-muted small">Leverage AI to predict trends, track top-selling medicines, and optimize your revenue.</p>
+            </div>
+        </div>
+    </div>
 </div>

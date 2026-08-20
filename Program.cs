@@ -14,17 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     );
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        connectionString,
-        sqlOptions =>
-        {
-            sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(10),
-                errorNumbersToAdd: null
-            );
-        }
-    )
+    options.UseSqlite(connectionString)
 );
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -44,6 +34,9 @@ builder.Services
 // MVC
 builder.Services.AddControllersWithViews();
 
+// Add SignalR for real-time updates
+builder.Services.AddSignalR();
+
 
 // ===============================
 // BUILD APP
@@ -62,8 +55,81 @@ using (var scope = app.Services.CreateScope())
 
     var db = services.GetRequiredService<ApplicationDbContext>();
 
-    // Apply pending migrations
+    // Create database schema directly instead of migrations
     await db.Database.MigrateAsync();
+
+    // ===============================
+    // SEED MOCK DATA
+    // ===============================
+    if (!db.Customers.Any())
+    {
+        var random = new Random();
+        
+        // Seed Customers
+        var customers = new List<PharmacyManagmentSystem.Models.Customer>();
+        for (int i = 1; i <= 5; i++)
+        {
+            customers.Add(new PharmacyManagmentSystem.Models.Customer
+            {
+                Name = $"Customer {i}",
+                Phone = $"555-010{i}",
+                Email = $"customer{i}@example.com",
+                Address = $"{i} Main St"
+            });
+        }
+        db.Customers.AddRange(customers);
+        await db.SaveChangesAsync();
+
+        // Medicines available for sale
+        var medicines = new[] { "Paracetamol", "Amoxicillin", "Ibuprofen", "Omeprazole", "Azithromycin" };
+        var paymentMethods = new[] { "Cash", "Credit Card", "Debit Card" };
+
+        // Seed Sales & SaleItems
+        for (int i = 0; i < 25; i++)
+        {
+            var customer = customers[random.Next(customers.Count)];
+            var saleItems = new List<PharmacyManagmentSystem.Models.SaleItem>();
+            
+            decimal subtotal = 0;
+            int numItems = random.Next(1, 4);
+            
+            for (int j = 0; j < numItems; j++)
+            {
+                var medicine = medicines[random.Next(medicines.Length)];
+                var quantity = random.Next(1, 5);
+                var unitPrice = (decimal)(random.NextDouble() * 20 + 5);
+                var totalPrice = quantity * unitPrice;
+                subtotal += totalPrice;
+
+                saleItems.Add(new PharmacyManagmentSystem.Models.SaleItem
+                {
+                    MedicineName = medicine,
+                    Quantity = quantity,
+                    UnitPrice = Math.Round(unitPrice, 2),
+                    TotalPrice = Math.Round(totalPrice, 2)
+                });
+            }
+
+            var discountPercentage = (decimal)random.Next(0, 15);
+            var discountAmount = Math.Round(subtotal * (discountPercentage / 100), 2);
+            var totalAmount = subtotal - discountAmount;
+
+            var sale = new PharmacyManagmentSystem.Models.Sale
+            {
+                CustomerId = customer.CustomerId,
+                SaleDate = DateTime.Now.AddDays(-random.Next(0, 30)),
+                Subtotal = Math.Round(subtotal, 2),
+                DiscountPercentage = discountPercentage,
+                DiscountAmount = discountAmount,
+                TotalAmount = Math.Round(totalAmount, 2),
+                PaymentMethod = paymentMethods[random.Next(paymentMethods.Length)],
+                SaleItems = saleItems
+            };
+
+            db.Sales.Add(sale);
+        }
+        await db.SaveChangesAsync();
+    }
 
     var roleManager =
         services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -199,6 +265,9 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}"
 )
 .WithStaticAssets();
+
+// Map SignalR Hub
+app.MapHub<PharmacyManagmentSystem.Hubs.AnalyticsHub>("/analyticsHub");
 
 app.MapRazorPages()
     .WithStaticAssets();

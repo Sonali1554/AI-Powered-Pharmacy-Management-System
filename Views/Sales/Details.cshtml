@@ -1,55 +1,52 @@
-﻿@model PharmacyManagmentSystem.Models.Sale
+@model PharmacyManagmentSystem.Models.Sale
 
 @{
     ViewData["Title"] = "Bill Details";
 }
 
-<div class="container mt-4">
+<div class="container mt-4 animate-fade-up">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Pharmacy Invoice</h2>
+        <h2 class="text-gradient"><i class="fa-solid fa-file-invoice me-2"></i> Pharmacy Invoice</h2>
 
         <button onclick="window.print()"
-                class="btn btn-primary">
-            Print Invoice
+                class="btn-nexus">
+            <i class="fa-solid fa-print me-1"></i> Print Invoice
         </button>
     </div>
 
-    <div class="card">
+    <div class="glass-card mb-4" id="invoiceArea">
 
-        <div class="card-body">
+        <div class="p-5">
+            
+            <div class="d-flex justify-content-between border-bottom pb-4 mb-4" style="border-color: rgba(255,255,255,0.05) !important;">
+                <div>
+                    <h3 class="text-primary mb-1"><i class="fa-solid fa-staff-snake me-2"></i>Nexus Pharmacy</h3>
+                    <p class="text-muted small mb-0">AI-Powered Management</p>
+                </div>
+                <div class="text-end">
+                    <h4 class="mb-1 text-info">Bill #@Model.SaleId</h4>
+                    <span class="badge bg-secondary bg-opacity-25 text-light">@Model.SaleDate.ToString("dd MMM yyyy HH:mm")</span>
+                </div>
+            </div>
 
-            <h4>Bill #@Model.SaleId</h4>
+            <h5 class="text-primary mb-3"><i class="fa-solid fa-user me-2"></i>Customer Details</h5>
 
-            <p>
-                <strong>Date:</strong>
-                @Model.SaleDate.ToString("dd-MM-yyyy HH:mm")
-            </p>
+            <div class="row mb-4">
+                <div class="col-sm-4">
+                    <p class="mb-1"><strong class="text-muted">Name:</strong><br/> @Model.Customer?.Name</p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="mb-1"><strong class="text-muted">Phone:</strong><br/> @Model.Customer?.Phone</p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="mb-1"><strong class="text-muted">Email:</strong><br/> @(string.IsNullOrEmpty(Model.Customer?.Email) ? "N/A" : Model.Customer?.Email)</p>
+                </div>
+            </div>
 
-            <hr />
+            <h5 class="text-primary mb-3"><i class="fa-solid fa-pills me-2"></i>Medicines Purchased</h5>
 
-            <h5>Customer Details</h5>
-
-            <p>
-                <strong>Name:</strong>
-                @Model.Customer?.Name
-            </p>
-
-            <p>
-                <strong>Phone:</strong>
-                @Model.Customer?.Phone
-            </p>
-
-            <p>
-                <strong>Email:</strong>
-                @Model.Customer?.Email
-            </p>
-
-            <hr />
-
-            <h5>Medicines</h5>
-
-            <table class="table table-bordered">
+            <table class="table-nexus mb-5">
 
                 <thead>
                     <tr>
@@ -76,32 +73,33 @@
 
             </table>
 
-            <div class="text-end">
+            <div class="row justify-content-end">
+                <div class="col-md-5">
+                    <div class="p-3 rounded" style="background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0,242,254,0.2);">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal:</span>
+                            <span>₹@Model.Subtotal.ToString("0.00")</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Discount (@Model.DiscountPercentage%):</span>
+                            <span class="text-info">-₹@Model.DiscountAmount.ToString("0.00")</span>
+                        </div>
+                        
+                        <hr style="border-color: rgba(0,242,254,0.2);" />
 
-                <p>
-                    <strong>Subtotal:</strong>
-                    ₹@Model.Subtotal.ToString("0.00")
-                </p>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0 text-primary">Total:</h4>
+                            <h3 class="mb-0 text-success fw-bold">₹@Model.TotalAmount.ToString("0.00")</h3>
+                        </div>
 
-                <p>
-                    <strong>Discount:</strong>
-                    @Model.DiscountPercentage%
-                </p>
-
-                <p>
-                    <strong>Discount Amount:</strong>
-                    ₹@Model.DiscountAmount.ToString("0.00")
-                </p>
-
-                <h4>
-                    Total:
-                    ₹@Model.TotalAmount.ToString("0.00")
-                </h4>
-
-                <p>
-                    <strong>Payment:</strong>
-                    @Model.PaymentMethod
-                </p>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted small">Payment Method:</span>
+                            <span class="badge bg-primary bg-opacity-25 text-primary">@Model.PaymentMethod</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             </div>
 
@@ -111,9 +109,8 @@
 
     <br />
 
-    <a asp-action="Index"
-       class="btn btn-secondary">
-        Back to Sales
+    <a asp-action="Index" class="btn-nexus-outline mt-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Sales History
     </a>
 
 </div>
