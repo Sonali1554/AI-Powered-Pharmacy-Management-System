@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PharmacyManagmentSystem.Data;
 using PharmacyManagmentSystem.Models;
+using Microsoft.AspNetCore.SignalR;
 
 namespace PharmacyManagmentSystem.Controllers
 {
@@ -10,10 +11,12 @@ namespace PharmacyManagmentSystem.Controllers
     public class SalesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly Microsoft.AspNetCore.SignalR.IHubContext<PharmacyManagmentSystem.Hubs.AnalyticsHub> _hubContext;
 
-        public SalesController(ApplicationDbContext context)
+        public SalesController(ApplicationDbContext context, Microsoft.AspNetCore.SignalR.IHubContext<PharmacyManagmentSystem.Hubs.AnalyticsHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // Sales History
@@ -105,6 +108,9 @@ namespace PharmacyManagmentSystem.Controllers
             _context.Sales.Add(sale);
 
             await _context.SaveChangesAsync();
+
+            // Notify connected dashboard clients to update in real-time
+            await _hubContext.Clients.All.SendAsync("UpdateDashboard");
 
             // Go to invoice
             return RedirectToAction(
