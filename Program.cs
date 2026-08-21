@@ -37,13 +37,11 @@ builder.Services.AddControllersWithViews();
 // Add SignalR for real-time updates
 builder.Services.AddSignalR();
 
-
 // ===============================
 // BUILD APP
 // ===============================
 
 var app = builder.Build();
-
 
 // ===============================
 // DATABASE + ADMIN SETUP
@@ -52,21 +50,20 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
     var db = services.GetRequiredService<ApplicationDbContext>();
 
-    // Create database schema directly instead of migrations
     await db.Database.MigrateAsync();
 
     // ===============================
     // SEED MOCK DATA
     // ===============================
+
     if (!db.Customers.Any())
     {
         var random = new Random();
-        
-        // Seed Customers
+
         var customers = new List<PharmacyManagmentSystem.Models.Customer>();
+
         for (int i = 1; i <= 5; i++)
         {
             customers.Add(new PharmacyManagmentSystem.Models.Customer
@@ -77,28 +74,41 @@ using (var scope = app.Services.CreateScope())
                 Address = $"{i} Main St"
             });
         }
+
         db.Customers.AddRange(customers);
         await db.SaveChangesAsync();
 
-        // Medicines available for sale
-        var medicines = new[] { "Paracetamol", "Amoxicillin", "Ibuprofen", "Omeprazole", "Azithromycin" };
-        var paymentMethods = new[] { "Cash", "Credit Card", "Debit Card" };
+        var medicines = new[]
+        {
+            "Paracetamol",
+            "Amoxicillin",
+            "Ibuprofen",
+            "Omeprazole",
+            "Azithromycin"
+        };
 
-        // Seed Sales & SaleItems
+        var paymentMethods = new[]
+        {
+            "Cash",
+            "Credit Card",
+            "Debit Card"
+        };
+
         for (int i = 0; i < 25; i++)
         {
             var customer = customers[random.Next(customers.Count)];
             var saleItems = new List<PharmacyManagmentSystem.Models.SaleItem>();
-            
+
             decimal subtotal = 0;
             int numItems = random.Next(1, 4);
-            
+
             for (int j = 0; j < numItems; j++)
             {
                 var medicine = medicines[random.Next(medicines.Length)];
                 var quantity = random.Next(1, 5);
                 var unitPrice = (decimal)(random.NextDouble() * 20 + 5);
                 var totalPrice = quantity * unitPrice;
+
                 subtotal += totalPrice;
 
                 saleItems.Add(new PharmacyManagmentSystem.Models.SaleItem
@@ -111,7 +121,9 @@ using (var scope = app.Services.CreateScope())
             }
 
             var discountPercentage = (decimal)random.Next(0, 15);
-            var discountAmount = Math.Round(subtotal * (discountPercentage / 100), 2);
+            var discountAmount =
+                Math.Round(subtotal * (discountPercentage / 100), 2);
+
             var totalAmount = subtotal - discountAmount;
 
             var sale = new PharmacyManagmentSystem.Models.Sale
@@ -122,12 +134,14 @@ using (var scope = app.Services.CreateScope())
                 DiscountPercentage = discountPercentage,
                 DiscountAmount = discountAmount,
                 TotalAmount = Math.Round(totalAmount, 2),
-                PaymentMethod = paymentMethods[random.Next(paymentMethods.Length)],
+                PaymentMethod =
+                    paymentMethods[random.Next(paymentMethods.Length)],
                 SaleItems = saleItems
             };
 
             db.Sales.Add(sale);
         }
+
         await db.SaveChangesAsync();
     }
 
@@ -136,7 +150,6 @@ using (var scope = app.Services.CreateScope())
 
     var userManager =
         services.GetRequiredService<UserManager<IdentityUser>>();
-
 
     // ===============================
     // CREATE ROLES
@@ -170,7 +183,6 @@ using (var scope = app.Services.CreateScope())
             }
         }
     }
-
 
     // ===============================
     // CREATE ADMIN USER
@@ -209,7 +221,6 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-
     // ===============================
     // GIVE ADMIN ROLE
     // ===============================
@@ -235,7 +246,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-
 // ===============================
 // HTTP PIPELINE
 // ===============================
@@ -254,7 +264,6 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-// IMPORTANT
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -266,7 +275,6 @@ app.MapControllerRoute(
 )
 .WithStaticAssets();
 
-// Map SignalR Hub
 app.MapHub<PharmacyManagmentSystem.Hubs.AnalyticsHub>("/analyticsHub");
 
 app.MapRazorPages()

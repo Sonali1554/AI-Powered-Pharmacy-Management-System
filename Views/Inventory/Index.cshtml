@@ -1,0 +1,163 @@
+﻿@model List<PharmacyManagementSystem.Models.Batch>
+
+<h2>Inventory & Stock Management</h2>
+
+<h3>Add Stock</h3>
+
+<form method="post" action="/Inventory/AddStock">
+
+    <div>
+        <label>Medicine Name:</label>
+        <input type="text" name="medicineName" required />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Batch Number:</label>
+        <input type="text" name="batchNumber" required />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Quantity:</label>
+        <input type="number" name="quantity" min="0" required />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Expiry Date:</label>
+        <input type="date" name="expiryDate" required />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Minimum Stock:</label>
+        <input type="number" name="minimumStock" min="0" required />
+    </div>
+
+    <br />
+
+    <button type="submit">Save Stock</button>
+
+</form>
+
+<hr />
+
+<h3>Current Stock</h3>
+
+@foreach (var batch in Model)
+{
+    if (batch.Quantity <= batch.MinimumStock)
+    {
+        <div>
+            ⚠️ Low Stock Alert: Batch @batch.BatchNumber has only
+            @batch.Quantity units remaining.
+        </div>
+    }
+
+    if (batch.ExpiryDate < DateTime.Today)
+    {
+        <div>
+            ❌ Expired: Batch @batch.BatchNumber has expired.
+        </div>
+    }
+    else if (batch.ExpiryDate <= DateTime.Today.AddDays(30))
+    {
+        <div>
+            ⚠️ Expiry Alert: Batch @batch.BatchNumber is expiring within 30 days.
+        </div>
+    }
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Batch Number</th>
+            <th>Quantity</th>
+            <th>Expiry Date</th>
+            <th>Minimum Stock</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var batch in Model)
+        {
+            <tr>
+                <td>@batch.BatchNumber</td>
+                <td>@batch.Quantity</td>
+                <td>@batch.ExpiryDate.ToShortDateString()</td>
+                <td>@batch.MinimumStock</td>
+                <td>
+                    <form method="post" action="/Inventory/UpdateStock" style="display:inline;">
+
+                        <input type="hidden"
+                               name="batchNumber"
+                               value="@batch.BatchNumber" />
+
+                        <input type="number"
+                               name="amount"
+                               min="1"
+                               placeholder="Amount"
+                               required />
+
+                        <button type="submit"
+                                name="action"
+                                value="add">
+                            Add
+                        </button>
+
+                        <button type="submit"
+                                name="action"
+                                value="remove">
+                            Remove
+                        </button>
+
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<hr />
+
+<h3>Stock History</h3>
+
+@{
+    var history = ViewBag.StockHistory as List<PharmacyManagementSystem.Models.StockHistory>;
+}
+
+@if (history != null && history.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Batch Number</th>
+                <th>Action</th>
+                <th>Quantity Change</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in history)
+            {
+                <tr>
+                    <td>@item.BatchNumber</td>
+                    <td>@item.Action</td>
+                    <td>@item.QuantityChange</td>
+                    <td>@item.Date.ToString("dd-MM-yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No stock history available.</p>
+}

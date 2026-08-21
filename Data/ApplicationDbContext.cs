@@ -7,13 +7,21 @@ namespace PharmacyManagmentSystem.Data
     public class ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
     {
+        // Existing team tables
         public DbSet<Customer> Customers { get; set; }
 
         public DbSet<Sale> Sales { get; set; }
 
         public DbSet<SaleItem> SaleItems { get; set; }
 
+        // Inventory tables
         public DbSet<Medicine> Medicines { get; set; }
+
+        public DbSet<MedicineCategory> MedicineCategories { get; set; }
+
+        public DbSet<Batch> Batches { get; set; }
+
+        public DbSet<StockHistory> StockHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,10 +53,14 @@ namespace PharmacyManagmentSystem.Data
                 .Property(s => s.TotalPrice)
                 .HasPrecision(18, 2);
 
-            // Medicine decimal fields
+            // Inventory Medicine decimal fields
             modelBuilder.Entity<Medicine>()
-                .Property(m => m.Price)
-                .HasPrecision(18, 2);
+                .Property(m => m.PurchasePrice)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<Medicine>()
+                .Property(m => m.SellingPrice)
+                .HasPrecision(10, 2);
         }
     }
 }
