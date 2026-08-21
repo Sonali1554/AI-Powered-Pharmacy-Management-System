@@ -1,0 +1,157 @@
+@model PharmacyManagementSystem.Models.Prescription
+
+@{
+    ViewData["Title"] = "Prescription Details";
+}
+
+<h1>Prescription Details</h1>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">
+            Prescription Number
+        </dt>
+        <dd class="col-sm-9">
+            <strong>@Model.PrescriptionNumber</strong>
+        </dd>
+
+        <dt class="col-sm-3">
+            Patient Name
+        </dt>
+        <dd class="col-sm-9">
+            @Model.PatientName
+        </dd>
+
+        <dt class="col-sm-3">
+            Age / Gender
+        </dt>
+        <dd class="col-sm-9">
+            @Model.PatientAge @(Model.PatientAge.HasValue ? "years" : "") @Model.PatientGender
+        </dd>
+
+        <dt class="col-sm-3">
+            Doctor
+        </dt>
+        <dd class="col-sm-9">
+            @Model.DoctorName
+            @if (!string.IsNullOrEmpty(Model.DoctorContact))
+            {
+                <text> (@Model.DoctorContact)</text>
+            }
+        </dd>
+
+        <dt class="col-sm-3">
+            Prescription Date
+        </dt>
+        <dd class="col-sm-9">
+            @Model.PrescriptionDate.ToString("dd-MM-yyyy")
+        </dd>
+
+        <dt class="col-sm-3">
+            Status
+        </dt>
+        <dd class="col-sm-9">
+            @switch (Model.Status)
+            {
+                case PharmacyManagementSystem.Models.PrescriptionStatus.Pending:
+                    <span class="badge bg-warning text-dark">Pending</span>
+                    break;
+                case PharmacyManagementSystem.Models.PrescriptionStatus.Verified:
+                    <span class="badge bg-info">Verified</span>
+                    break;
+                case PharmacyManagementSystem.Models.PrescriptionStatus.Dispensed:
+                    <span class="badge bg-success">Dispensed</span>
+                    break;
+                case PharmacyManagementSystem.Models.PrescriptionStatus.Cancelled:
+                    <span class="badge bg-secondary">Cancelled</span>
+                    break;
+            }
+        </dd>
+
+        @if (Model.VerifiedBy != null)
+        {
+            <dt class="col-sm-3">
+                Verified By
+            </dt>
+            <dd class="col-sm-9">
+                @Model.VerifiedBy on @Model.VerifiedDate?.ToString("dd-MM-yyyy HH:mm")
+            </dd>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <dt class="col-sm-3">
+                Notes
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Notes
+            </dd>
+        }
+    </dl>
+
+    <h4>Prescribed Medicines</h4>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Medicine</th>
+                <th>Dosage</th>
+                <th>Frequency</th>
+                <th>Duration</th>
+                <th>Quantity</th>
+                <th>Instructions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int rowNum = 1;
+            }
+            @foreach (var item in Model.PrescriptionItems)
+            {
+                <tr>
+                    <td>@rowNum</td>
+                    <td>@item.Medicine?.MedicineName</td>
+                    <td>@item.Dosage</td>
+                    <td>@item.Frequency</td>
+                    <td>@item.Duration</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Instructions</td>
+                </tr>
+                rowNum++;
+            }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    @if (Model.Status == PharmacyManagementSystem.Models.PrescriptionStatus.Pending)
+    {
+        <a asp-action="Verify"
+           asp-route-id="@Model.PrescriptionId"
+           class="btn btn-info">Verify</a>
+    }
+
+    @if (Model.Status == PharmacyManagementSystem.Models.PrescriptionStatus.Verified)
+    {
+        <form asp-action="Dispense" asp-route-id="@Model.PrescriptionId" method="post" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success"
+                    onclick="return confirm('This will deduct medicine stock. Continue?')">
+                Dispense
+            </button>
+        </form>
+    }
+
+    <a asp-action="Index"
+       class="btn btn-secondary">Back to List</a>
+</div>

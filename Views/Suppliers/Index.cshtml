@@ -1,0 +1,72 @@
+@model IEnumerable<PharmacyManagementSystem.Models.Supplier>
+
+@{
+    ViewData["Title"] = "Suppliers";
+}
+
+<h1>Suppliers</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add Supplier</a>
+</p>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text"
+               name="searchString"
+               value="@ViewData["SearchString"]"
+               class="form-control"
+               placeholder="Search by name, city, GST number or contact person" />
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Supplier Name</th>
+            <th>Contact Person</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>City</th>
+            <th>GST Number</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.SupplierName</td>
+                <td>@item.ContactPerson</td>
+                <td>@item.Email</td>
+                <td>@item.Phone</td>
+                <td>@item.City</td>
+                <td>@item.GSTNumber</td>
+                <td>
+                    @if (item.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@item.SupplierId">Edit</a> |
+
+                    <a asp-action="Details"
+                       asp-route-id="@item.SupplierId">Details</a> |
+
+                    <a asp-action="Delete"
+                       asp-route-id="@item.SupplierId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

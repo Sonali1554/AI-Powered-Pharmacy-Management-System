@@ -1,0 +1,123 @@
+@model PharmacyManagementSystem.Models.Prescription
+
+@{
+    ViewData["Title"] = "Verify Prescription";
+}
+
+<h1>Verify Prescription</h1>
+
+<div class="alert alert-info">
+    <strong>Review this prescription carefully.</strong> Check that all medicines are available in stock and the dosages are appropriate before verifying.
+</div>
+
+<div>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">
+            Prescription Number
+        </dt>
+        <dd class="col-sm-9">
+            <strong>@Model.PrescriptionNumber</strong>
+        </dd>
+
+        <dt class="col-sm-3">
+            Patient
+        </dt>
+        <dd class="col-sm-9">
+            @Model.PatientName (@Model.PatientAge years, @Model.PatientGender)
+        </dd>
+
+        <dt class="col-sm-3">
+            Doctor
+        </dt>
+        <dd class="col-sm-9">
+            @Model.DoctorName
+        </dd>
+
+        <dt class="col-sm-3">
+            Date
+        </dt>
+        <dd class="col-sm-9">
+            @Model.PrescriptionDate.ToString("dd-MM-yyyy")
+        </dd>
+    </dl>
+
+    <h4>Prescribed Medicines — Stock Availability</h4>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Medicine</th>
+                <th>Category</th>
+                <th>Dosage</th>
+                <th>Frequency</th>
+                <th>Duration</th>
+                <th>Required Qty</th>
+                <th>Available Stock</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int rowNum = 1;
+                bool allAvailable = true;
+            }
+            @foreach (var item in Model.PrescriptionItems)
+            {
+                var availableQty = item.Medicine?.Quantity ?? 0;
+                var isAvailable = availableQty >= item.Quantity;
+                if (!isAvailable) allAvailable = false;
+
+                <tr class="@(isAvailable ? "" : "table-danger")">
+                    <td>@rowNum</td>
+                    <td>@item.Medicine?.MedicineName</td>
+                    <td>@item.Medicine?.Category?.CategoryName</td>
+                    <td>@item.Dosage</td>
+                    <td>@item.Frequency</td>
+                    <td>@item.Duration</td>
+                    <td>@item.Quantity</td>
+                    <td>@availableQty</td>
+                    <td>
+                        @if (isAvailable)
+                        {
+                            <span class="badge bg-success">Available</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Insufficient</span>
+                        }
+                    </td>
+                </tr>
+                rowNum++;
+            }
+        </tbody>
+    </table>
+
+    @if (!allAvailable)
+    {
+        <div class="alert alert-warning">
+            <strong>Warning:</strong> Some medicines have insufficient stock. You can still verify the prescription, but dispensing will fail until stock is replenished.
+        </div>
+    }
+
+    <hr />
+
+    <form asp-action="VerifyConfirmed" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.PrescriptionId" />
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label">Verified By</label>
+                    <input name="verifiedBy" class="form-control" required placeholder="Enter your name" />
+                </div>
+            </div>
+        </div>
+
+        <input type="submit" value="✓ Verify Prescription" class="btn btn-success" />
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>

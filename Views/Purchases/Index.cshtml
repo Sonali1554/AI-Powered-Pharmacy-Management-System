@@ -1,0 +1,76 @@
+@model IEnumerable<PharmacyManagementSystem.Models.Purchase>
+
+@{
+    ViewData["Title"] = "Purchases";
+}
+
+<h1>Purchases</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">New Purchase</a>
+</p>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text"
+               name="searchString"
+               value="@ViewData["SearchString"]"
+               class="form-control"
+               placeholder="Search by invoice number or supplier name" />
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Invoice Number</th>
+            <th>Supplier</th>
+            <th>Purchase Date</th>
+            <th>Total Amount</th>
+            <th>Net Amount</th>
+            <th>Payment Status</th>
+            <th>Items</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.InvoiceNumber</td>
+                <td>@item.Supplier?.SupplierName</td>
+                <td>@item.PurchaseDate.ToString("dd-MM-yyyy")</td>
+                <td>₹@item.TotalAmount.ToString("N2")</td>
+                <td>₹@item.NetAmount.ToString("N2")</td>
+                <td>
+                    @switch (item.PaymentStatus)
+                    {
+                        case PharmacyManagementSystem.Models.PaymentStatus.Paid:
+                            <span class="badge bg-success">Paid</span>
+                            break;
+                        case PharmacyManagementSystem.Models.PaymentStatus.Partial:
+                            <span class="badge bg-warning text-dark">Partial</span>
+                            break;
+                        default:
+                            <span class="badge bg-danger">Pending</span>
+                            break;
+                    }
+                </td>
+                <td>@item.PurchaseItems.Count</td>
+                <td>
+                    <a asp-action="Details"
+                       asp-route-id="@item.PurchaseId">Details</a> |
+
+                    <a asp-action="Invoice"
+                       asp-route-id="@item.PurchaseId">Invoice</a> |
+
+                    <a asp-action="Delete"
+                       asp-route-id="@item.PurchaseId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
