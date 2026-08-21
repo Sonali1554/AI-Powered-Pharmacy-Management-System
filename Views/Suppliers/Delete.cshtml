@@ -1,0 +1,82 @@
+@model PharmacyManagementSystem.Models.Supplier
+
+@{
+    ViewData["Title"] = "Delete Supplier";
+}
+
+<h1>Delete Supplier</h1>
+
+<h3>Are you sure you want to delete this supplier?</h3>
+
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @ViewData["ErrorMessage"]
+    </div>
+}
+
+<div>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">
+            Supplier Name
+        </dt>
+        <dd class="col-sm-9">
+            @Model.SupplierName
+        </dd>
+
+        <dt class="col-sm-3">
+            Contact Person
+        </dt>
+        <dd class="col-sm-9">
+            @Model.ContactPerson
+        </dd>
+
+        <dt class="col-sm-3">
+            Email
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Email
+        </dd>
+
+        <dt class="col-sm-3">
+            Phone
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Phone
+        </dd>
+
+        <dt class="col-sm-3">
+            City
+        </dt>
+        <dd class="col-sm-9">
+            @Model.City
+        </dd>
+
+        <dt class="col-sm-3">
+            GST Number
+        </dt>
+        <dd class="col-sm-9">
+            @Model.GSTNumber
+        </dd>
+
+        <dt class="col-sm-3">
+            Total Purchases
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Purchases.Count
+        </dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" name="id" value="@Model.SupplierId" />
+
+        @if (ViewData["ErrorMessage"] == null)
+        {
+            <input type="submit" value="Delete" class="btn btn-danger" />
+        }
+
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>

@@ -1,0 +1,83 @@
+@model PharmacyManagementSystem.Models.Purchase
+
+@{
+    ViewData["Title"] = "Delete Purchase";
+}
+
+<h1>Delete Purchase</h1>
+
+<h3>Are you sure you want to delete this purchase?</h3>
+
+<div class="alert alert-warning">
+    <strong>Warning:</strong> Deleting this purchase will reverse the stock additions for all items.
+</div>
+
+<div>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">
+            Invoice Number
+        </dt>
+        <dd class="col-sm-9">
+            @Model.InvoiceNumber
+        </dd>
+
+        <dt class="col-sm-3">
+            Supplier
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Supplier?.SupplierName
+        </dd>
+
+        <dt class="col-sm-3">
+            Purchase Date
+        </dt>
+        <dd class="col-sm-9">
+            @Model.PurchaseDate.ToString("dd-MM-yyyy")
+        </dd>
+
+        <dt class="col-sm-3">
+            Net Amount
+        </dt>
+        <dd class="col-sm-9">
+            ₹@Model.NetAmount.ToString("N2")
+        </dd>
+
+        <dt class="col-sm-3">
+            Items Count
+        </dt>
+        <dd class="col-sm-9">
+            @Model.PurchaseItems.Count
+        </dd>
+    </dl>
+
+    <h5>Items that will have stock reversed:</h5>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>Medicine</th>
+                <th>Batch</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.PurchaseItems)
+            {
+                <tr>
+                    <td>@item.Medicine?.MedicineName</td>
+                    <td>@item.BatchNumber</td>
+                    <td>@item.Quantity</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" name="id" value="@Model.PurchaseId" />
+
+        <input type="submit" value="Delete" class="btn btn-danger" />
+
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>

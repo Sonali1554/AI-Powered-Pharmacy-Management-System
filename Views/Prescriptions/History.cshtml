@@ -1,0 +1,111 @@
+@model IEnumerable<PharmacyManagementSystem.Models.Prescription>
+
+@{
+    ViewData["Title"] = "Prescription History";
+}
+
+<h1>Prescription History</h1>
+
+<form asp-action="History" method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text"
+                       name="patientName"
+                       value="@ViewData["PatientName"]"
+                       class="form-control"
+                       placeholder="Enter patient name to search history" />
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a asp-action="History" class="btn btn-secondary">Clear</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@if (ViewData["PatientName"] != null)
+{
+    <h4>Showing history for: <strong>@ViewData["PatientName"]</strong> (@Model.Count() records found)</h4>
+    <hr />
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No prescriptions found for this patient.
+        </div>
+    }
+    else
+    {
+        @foreach (var prescription in Model)
+        {
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>@prescription.PrescriptionNumber</strong>
+                        <span class="text-muted ms-2">@prescription.PrescriptionDate.ToString("dd-MM-yyyy")</span>
+                    </div>
+                    <div>
+                        @switch (prescription.Status)
+                        {
+                            case PharmacyManagementSystem.Models.PrescriptionStatus.Pending:
+                                <span class="badge bg-warning text-dark">Pending</span>
+                                break;
+                            case PharmacyManagementSystem.Models.PrescriptionStatus.Verified:
+                                <span class="badge bg-info">Verified</span>
+                                break;
+                            case PharmacyManagementSystem.Models.PrescriptionStatus.Dispensed:
+                                <span class="badge bg-success">Dispensed</span>
+                                break;
+                            case PharmacyManagementSystem.Models.PrescriptionStatus.Cancelled:
+                                <span class="badge bg-secondary">Cancelled</span>
+                                break;
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1">
+                        <strong>Doctor:</strong> @prescription.DoctorName
+                        @if (prescription.VerifiedBy != null)
+                        {
+                            <text> | <strong>Verified by:</strong> @prescription.VerifiedBy on @prescription.VerifiedDate?.ToString("dd-MM-yyyy")</text>
+                        }
+                    </p>
+
+                    <table class="table table-sm table-bordered mt-2 mb-0">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Dosage</th>
+                                <th>Frequency</th>
+                                <th>Duration</th>
+                                <th>Qty</th>
+                                <th>Instructions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in prescription.PrescriptionItems)
+                            {
+                                <tr>
+                                    <td>@item.Medicine?.MedicineName</td>
+                                    <td>@item.Dosage</td>
+                                    <td>@item.Frequency</td>
+                                    <td>@item.Duration</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.Instructions</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-end">
+                    <a asp-action="Details" asp-route-id="@prescription.PrescriptionId" class="btn btn-sm btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        }
+    }
+}
+else
+{
+    <div class="alert alert-secondary">
+        Enter a patient name above to view their prescription history.
+    </div>
+}

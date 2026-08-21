@@ -1,0 +1,172 @@
+@model PharmacyManagementSystem.Models.Prescription
+
+@{
+    ViewData["Title"] = "New Prescription";
+}
+
+<h1>New Prescription</h1>
+
+<h4>Prescription Entry</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-10">
+        <form asp-action="Create" method="post" id="prescriptionForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="PatientName" class="control-label"></label>
+                        <input asp-for="PatientName" class="form-control" />
+                        <span asp-validation-for="PatientName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label asp-for="PatientAge" class="control-label"></label>
+                        <input asp-for="PatientAge" type="number" min="0" max="150" class="form-control" />
+                        <span asp-validation-for="PatientAge" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label asp-for="PatientGender" class="control-label"></label>
+                        <select asp-for="PatientGender" class="form-control">
+                            <option value="">-- Select --</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="PrescriptionDate" class="control-label"></label>
+                        <input asp-for="PrescriptionDate" type="date" class="form-control" />
+                        <span asp-validation-for="PrescriptionDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="DoctorName" class="control-label"></label>
+                        <input asp-for="DoctorName" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="DoctorContact" class="control-label"></label>
+                        <input asp-for="DoctorContact" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Notes" class="control-label"></label>
+                        <input asp-for="Notes" class="form-control" />
+                    </div>
+                </div>
+            </div>
+
+            <h5>Prescribed Medicines</h5>
+            <table class="table table-bordered" id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Dosage</th>
+                        <th>Frequency</th>
+                        <th>Duration</th>
+                        <th>Quantity</th>
+                        <th>Instructions</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody">
+                    <tr class="item-row" data-index="0">
+                        <td>
+                            <select name="PrescriptionItems[0].MedicineId" class="form-control" required>
+                                <option value="">-- Select --</option>
+                                @foreach (var med in (SelectList)ViewData["Medicines"]!)
+                                {
+                                    <option value="@med.Value">@med.Text</option>
+                                }
+                            </select>
+                        </td>
+                        <td><input name="PrescriptionItems[0].Dosage" class="form-control" placeholder="e.g. 500mg" /></td>
+                        <td><input name="PrescriptionItems[0].Frequency" class="form-control" placeholder="e.g. Twice daily" /></td>
+                        <td><input name="PrescriptionItems[0].Duration" class="form-control" placeholder="e.g. 7 days" /></td>
+                        <td><input name="PrescriptionItems[0].Quantity" type="number" min="1" class="form-control" required /></td>
+                        <td><input name="PrescriptionItems[0].Instructions" class="form-control" placeholder="e.g. After meals" /></td>
+                        <td><button type="button" class="btn btn-danger btn-sm remove-item">✕</button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <button type="button" class="btn btn-success btn-sm mb-3" id="addItem">+ Add Medicine</button>
+
+            <div class="form-group">
+                <input type="submit" value="Save Prescription" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let itemIndex = 1;
+
+            const firstSelect = document.querySelector('.item-row select');
+            const medicineOptions = firstSelect.innerHTML;
+
+            document.getElementById('addItem').addEventListener('click', function () {
+                const row = document.createElement('tr');
+                row.className = 'item-row';
+                row.dataset.index = itemIndex;
+                row.innerHTML = `
+                    <td>
+                        <select name="PrescriptionItems[${itemIndex}].MedicineId" class="form-control" required>
+                            ${medicineOptions}
+                        </select>
+                    </td>
+                    <td><input name="PrescriptionItems[${itemIndex}].Dosage" class="form-control" placeholder="e.g. 500mg" /></td>
+                    <td><input name="PrescriptionItems[${itemIndex}].Frequency" class="form-control" placeholder="e.g. Twice daily" /></td>
+                    <td><input name="PrescriptionItems[${itemIndex}].Duration" class="form-control" placeholder="e.g. 7 days" /></td>
+                    <td><input name="PrescriptionItems[${itemIndex}].Quantity" type="number" min="1" class="form-control" required /></td>
+                    <td><input name="PrescriptionItems[${itemIndex}].Instructions" class="form-control" placeholder="e.g. After meals" /></td>
+                    <td><button type="button" class="btn btn-danger btn-sm remove-item">✕</button></td>
+                `;
+                document.getElementById('itemsBody').appendChild(row);
+                itemIndex++;
+            });
+
+            document.getElementById('itemsBody').addEventListener('click', function (e) {
+                if (e.target.classList.contains('remove-item')) {
+                    const rows = document.querySelectorAll('.item-row');
+                    if (rows.length > 1) {
+                        e.target.closest('tr').remove();
+                        document.querySelectorAll('.item-row').forEach(function (row, idx) {
+                            row.dataset.index = idx;
+                            row.querySelectorAll('[name]').forEach(function (input) {
+                                input.name = input.name.replace(/\[\d+\]/, '[' + idx + ']');
+                            });
+                        });
+                        itemIndex = document.querySelectorAll('.item-row').length;
+                    }
+                }
+            });
+        });
+    </script>
+}
