@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PharmacyManagementSystem.Data;
-using PharmacyManagementSystem.Models;
+using PharmacyManagmentSystem.Data;
+using PharmacyManagmentSystem.Models;
 
-namespace PharmacyManagementSystem.Controllers
+namespace PharmacyManagmentSystem.Controllers
 {
     public class SuppliersController : Controller
     {

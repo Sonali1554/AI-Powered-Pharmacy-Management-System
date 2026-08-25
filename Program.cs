@@ -145,6 +145,9 @@ using (var scope = app.Services.CreateScope())
         await db.SaveChangesAsync();
     }
 
+    // Call the new centralized DbInitializer to seed missing data for other tables
+    PharmacyManagmentSystem.Data.DbInitializer.Initialize(db);
+
     var roleManager =
         services.GetRequiredService<RoleManager<IdentityRole>>();
 

@@ -1,4 +1,4 @@
-@model PharmacyManagementSystem.Models.Purchase
+@model PharmacyManagmentSystem.Models.Purchase
 
 @{
     ViewData["Title"] = "New Purchase";
@@ -47,7 +47,7 @@
                     <div class="form-group">
                         <label asp-for="PaymentStatus" class="control-label"></label>
                         <select asp-for="PaymentStatus" class="form-control"
-                                asp-items="Html.GetEnumSelectList<PharmacyManagementSystem.Models.PaymentStatus>()">
+                                asp-items="Html.GetEnumSelectList<PharmacyManagmentSystem.Models.PaymentStatus>()">
                         </select>
                     </div>
                 </div>

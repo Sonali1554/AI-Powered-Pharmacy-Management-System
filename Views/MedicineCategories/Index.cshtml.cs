@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace PharmacyManagementSystem.Views.MedicineCategories
+namespace PharmacyManagmentSystem.Views.MedicineCategories
 {
     public class IndexModel : PageModel
     {

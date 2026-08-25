@@ -1,4 +1,4 @@
-﻿@model List<PharmacyManagementSystem.Models.Batch>
+@model List<PharmacyManagmentSystem.Models.Batch>
 
 <h2>Inventory & Stock Management</h2>
 
@@ -54,7 +54,7 @@
     if (batch.Quantity <= batch.MinimumStock)
     {
         <div>
-            ⚠️ Low Stock Alert: Batch @batch.BatchNumber has only
+            ?? Low Stock Alert: Batch @batch.BatchNumber has only
             @batch.Quantity units remaining.
         </div>
     }
@@ -62,13 +62,13 @@
     if (batch.ExpiryDate < DateTime.Today)
     {
         <div>
-            ❌ Expired: Batch @batch.BatchNumber has expired.
+            ? Expired: Batch @batch.BatchNumber has expired.
         </div>
     }
     else if (batch.ExpiryDate <= DateTime.Today.AddDays(30))
     {
         <div>
-            ⚠️ Expiry Alert: Batch @batch.BatchNumber is expiring within 30 days.
+            ?? Expiry Alert: Batch @batch.BatchNumber is expiring within 30 days.
         </div>
     }
 }
@@ -129,7 +129,7 @@
 <h3>Stock History</h3>
 
 @{
-    var history = ViewBag.StockHistory as List<PharmacyManagementSystem.Models.StockHistory>;
+    var history = ViewBag.StockHistory as List<PharmacyManagmentSystem.Models.StockHistory>;
 }
 
 @if (history != null && history.Count > 0)

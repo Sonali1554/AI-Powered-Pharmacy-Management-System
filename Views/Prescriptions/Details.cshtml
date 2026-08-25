@@ -1,4 +1,4 @@
-@model PharmacyManagementSystem.Models.Prescription
+@model PharmacyManagmentSystem.Models.Prescription
 
 @{
     ViewData["Title"] = "Prescription Details";
@@ -62,16 +62,16 @@
         <dd class="col-sm-9">
             @switch (Model.Status)
             {
-                case PharmacyManagementSystem.Models.PrescriptionStatus.Pending:
+                case PharmacyManagmentSystem.Models.PrescriptionStatus.Pending:
                     <span class="badge bg-warning text-dark">Pending</span>
                     break;
-                case PharmacyManagementSystem.Models.PrescriptionStatus.Verified:
+                case PharmacyManagmentSystem.Models.PrescriptionStatus.Verified:
                     <span class="badge bg-info">Verified</span>
                     break;
-                case PharmacyManagementSystem.Models.PrescriptionStatus.Dispensed:
+                case PharmacyManagmentSystem.Models.PrescriptionStatus.Dispensed:
                     <span class="badge bg-success">Dispensed</span>
                     break;
-                case PharmacyManagementSystem.Models.PrescriptionStatus.Cancelled:
+                case PharmacyManagmentSystem.Models.PrescriptionStatus.Cancelled:
                     <span class="badge bg-secondary">Cancelled</span>
                     break;
             }
@@ -134,14 +134,14 @@
 </div>
 
 <div>
-    @if (Model.Status == PharmacyManagementSystem.Models.PrescriptionStatus.Pending)
+    @if (Model.Status == PharmacyManagmentSystem.Models.PrescriptionStatus.Pending)
     {
         <a asp-action="Verify"
            asp-route-id="@Model.PrescriptionId"
            class="btn btn-info">Verify</a>
     }
 
-    @if (Model.Status == PharmacyManagementSystem.Models.PrescriptionStatus.Verified)
+    @if (Model.Status == PharmacyManagmentSystem.Models.PrescriptionStatus.Verified)
     {
         <form asp-action="Dispense" asp-route-id="@Model.PrescriptionId" method="post" style="display:inline;">
             @Html.AntiForgeryToken()

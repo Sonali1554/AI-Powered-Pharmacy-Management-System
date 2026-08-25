@@ -1,4 +1,4 @@
-﻿namespace PharmacyManagmentSystem.Models
+namespace PharmacyManagmentSystem.Models
 {
     public class StockHistory
     {
