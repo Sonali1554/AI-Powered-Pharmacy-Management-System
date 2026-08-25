@@ -1,4 +1,4 @@
-@model IEnumerable<PharmacyManagementSystem.Models.Prescription>
+@model IEnumerable<PharmacyManagmentSystem.Models.Prescription>
 
 @{
     ViewData["Title"] = "Prescriptions";
@@ -62,16 +62,16 @@
                 <td>
                     @switch (item.Status)
                     {
-                        case PharmacyManagementSystem.Models.PrescriptionStatus.Pending:
+                        case PharmacyManagmentSystem.Models.PrescriptionStatus.Pending:
                             <span class="badge bg-warning text-dark">Pending</span>
                             break;
-                        case PharmacyManagementSystem.Models.PrescriptionStatus.Verified:
+                        case PharmacyManagmentSystem.Models.PrescriptionStatus.Verified:
                             <span class="badge bg-info">Verified</span>
                             break;
-                        case PharmacyManagementSystem.Models.PrescriptionStatus.Dispensed:
+                        case PharmacyManagmentSystem.Models.PrescriptionStatus.Dispensed:
                             <span class="badge bg-success">Dispensed</span>
                             break;
-                        case PharmacyManagementSystem.Models.PrescriptionStatus.Cancelled:
+                        case PharmacyManagmentSystem.Models.PrescriptionStatus.Cancelled:
                             <span class="badge bg-secondary">Cancelled</span>
                             break;
                     }
@@ -81,7 +81,7 @@
                     <a asp-action="Details"
                        asp-route-id="@item.PrescriptionId">Details</a>
 
-                    @if (item.Status == PharmacyManagementSystem.Models.PrescriptionStatus.Pending)
+                    @if (item.Status == PharmacyManagmentSystem.Models.PrescriptionStatus.Pending)
                     {
                         <text> | </text>
                         <a asp-action="Verify"

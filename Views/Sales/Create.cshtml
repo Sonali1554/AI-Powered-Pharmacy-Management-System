@@ -1,0 +1,475 @@
+@model PharmacyManagmentSystem.Models.Customer
+
+@{
+    ViewData["Title"] = "Create Bill";
+}
+
+<div class="container mt-4 animate-fade-up">
+
+    <h2 class="mb-4 text-gradient"><i class="fa-solid fa-cart-shopping me-2"></i> New Sale / POS</h2>
+
+    <form asp-action="Create" method="post" id="billingForm">
+
+        <!-- ================= CUSTOMER ================= -->
+
+        <div class="glass-card mb-4">
+            <div class="p-3 border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+                <h5 class="mb-0 text-primary"><i class="fa-solid fa-user me-2"></i>Customer Details</h5>
+            </div>
+
+            <div class="p-4">
+
+                <div class="row mb-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Customer Name</label>
+                        <input name="Name"
+                               class="form-control-nexus w-100"
+                               required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input name="Phone"
+                               class="form-control-nexus w-100"
+                               required />
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input name="Email"
+                               type="email"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Address</label>
+                        <input name="Address"
+                               class="form-control" />
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- ================= MEDICINES ================= -->
+
+        <div class="glass-card mb-4">
+
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-color: rgba(255,255,255,0.05) !important;">
+
+                <h5 class="mb-0 text-info"><i class="fa-solid fa-pills me-2"></i>Medicine Selection</h5>
+
+                <button type="button"
+                        class="btn-nexus-outline btn-sm"
+                        onclick="addMedicine()">
+                    <i class="fa-solid fa-plus me-1"></i> Add Medicine
+                </button>
+
+            </div>
+
+            <div class="p-4">
+
+                <div id="medicineContainer">
+
+                    <!-- First medicine row -->
+                    <div class="medicine-row border rounded p-3 mb-3">
+
+                        <div class="row align-items-end">
+
+                            <div class="col-md-2">
+                                <label class="form-label">
+                                    Medicine ID
+                                </label>
+
+                                <input name="saleItems[0].MedicineId"
+                                       type="number"
+                                       class="form-control"
+                                       required />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">
+                                    Medicine Name
+                                </label>
+
+                                <input name="saleItems[0].MedicineName"
+                                       class="form-control"
+                                       required />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">
+                                    Quantity
+                                </label>
+
+                                <input name="saleItems[0].Quantity"
+                                       type="number"
+                                       min="1"
+                                       value="1"
+                                       class="form-control-nexus w-100 quantity"
+                                       oninput="calculateTotal()"
+                                       required />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">
+                                    Unit Price
+                                </label>
+
+                                <input name="saleItems[0].UnitPrice"
+                                       type="number"
+                                       step="0.01"
+                                       min="0"
+                                       class="form-control-nexus w-100 price"
+                                       oninput="calculateTotal()"
+                                       required />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">
+                                    Total
+                                </label>
+
+                                <input type="text"
+                                       class="form-control-nexus w-100 item-total"
+                                       style="background: rgba(0, 242, 254, 0.1); color: var(--accent-primary); border-color: transparent;"
+                                       value="₹0.00"
+                                       readonly />
+                            </div>
+
+                            <div class="col-md-1">
+
+                                <button type="button"
+                                        class="btn btn-danger"
+                                        onclick="removeMedicine(this)">
+                                    ×
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= BILL CALCULATION ================= -->
+
+        <div class="glass-card mb-4" style="background: rgba(0, 242, 254, 0.03);">
+
+            <div class="p-3 border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+                <h5 class="mb-0 text-success"><i class="fa-solid fa-receipt me-2"></i>Bill Summary</h5>
+            </div>
+
+            <div class="p-4">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Discount (%)
+                        </label>
+
+                        <input name="discountPercentage"
+                               id="discountPercentage"
+                               type="number"
+                               step="0.01"
+                               min="0"
+                               max="100"
+                               value="0"
+                               class="form-control"
+                               oninput="calculateTotal()" />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Payment Method
+                        </label>
+
+                        <select name="paymentMethod"
+                                class="form-select">
+
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Card">Card</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <div class="text-end">
+
+                    <p class="fs-5">
+                        <strong>Subtotal:</strong>
+                        <span id="subtotal">₹0.00</span>
+                    </p>
+
+                    <p class="fs-5">
+                        <strong>Discount:</strong>
+                        <span id="discountAmount">₹0.00</span>
+                    </p>
+
+                    <h3>
+                        Total:
+                        <span id="grandTotal">₹0.00</span>
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= BUTTONS ================= -->
+
+        <div class="mb-5 d-flex gap-3">
+
+            <button type="submit"
+                    class="btn-nexus btn-lg flex-grow-1" style="max-width: 300px;">
+                <i class="fa-solid fa-check-circle me-2"></i> Generate Bill
+            </button>
+
+            <a asp-action="Index"
+               class="btn-nexus-outline btn-lg">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+    let medicineIndex = 1;
+
+
+    // Add another medicine
+    function addMedicine() {
+
+        const container =
+            document.getElementById("medicineContainer");
+
+        const row = document.createElement("div");
+
+        row.className =
+            "medicine-row border rounded p-3 mb-3";
+
+        row.innerHTML = `
+
+            <div class="row align-items-end">
+
+                <div class="col-md-2">
+
+                    <label class="form-label">
+                        Medicine ID
+                    </label>
+
+                    <input
+                        name="saleItems[${medicineIndex}].MedicineId"
+                        type="number"
+                        class="form-control"
+                        required />
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Medicine Name
+                    </label>
+
+                    <input
+                        name="saleItems[${medicineIndex}].MedicineName"
+                        class="form-control"
+                        required />
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <label class="form-label">
+                        Quantity
+                    </label>
+
+                    <input
+                        name="saleItems[${medicineIndex}].Quantity"
+                        type="number"
+                        min="1"
+                        value="1"
+                        class="form-control quantity"
+                        oninput="calculateTotal()"
+                        required />
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <label class="form-label">
+                        Unit Price
+                    </label>
+
+                    <input
+                        name="saleItems[${medicineIndex}].UnitPrice"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        class="form-control price"
+                        oninput="calculateTotal()"
+                        required />
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <label class="form-label">
+                        Total
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control item-total"
+                        value="₹0.00"
+                        readonly />
+
+                </div>
+
+
+                <div class="col-md-1">
+
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        onclick="removeMedicine(this)">
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(row);
+
+        medicineIndex++;
+
+        calculateTotal();
+    }
+
+
+    // Remove medicine
+    function removeMedicine(button) {
+
+        const rows =
+            document.querySelectorAll(".medicine-row");
+
+        // Don't allow removing the last medicine
+        if (rows.length === 1) {
+
+            alert("At least one medicine is required.");
+
+            return;
+        }
+
+        button.closest(".medicine-row").remove();
+
+        calculateTotal();
+    }
+
+
+    // Calculate subtotal, discount and total
+    function calculateTotal() {
+
+        let subtotal = 0;
+
+        const rows =
+            document.querySelectorAll(".medicine-row");
+
+
+        rows.forEach(function (row) {
+
+            const quantityInput =
+                row.querySelector(".quantity");
+
+            const priceInput =
+                row.querySelector(".price");
+
+            const totalInput =
+                row.querySelector(".item-total");
+
+
+            const quantity =
+                parseFloat(quantityInput.value) || 0;
+
+            const price =
+                parseFloat(priceInput.value) || 0;
+
+
+            const itemTotal =
+                quantity * price;
+
+
+            subtotal += itemTotal;
+
+
+            totalInput.value =
+                "₹" + itemTotal.toFixed(2);
+
+        });
+
+
+        // Discount
+        const discountPercentage =
+            parseFloat(
+                document.getElementById("discountPercentage").value
+            ) || 0;
+
+
+        const discountAmount =
+            subtotal * discountPercentage / 100;
+
+
+        const grandTotal =
+            subtotal - discountAmount;
+
+
+        // Display values
+        document.getElementById("subtotal").innerText =
+            "₹" + subtotal.toFixed(2);
+
+        document.getElementById("discountAmount").innerText =
+            "₹" + discountAmount.toFixed(2);
+
+        document.getElementById("grandTotal").innerText =
+            "₹" + grandTotal.toFixed(2);
+    }
+
+</script>

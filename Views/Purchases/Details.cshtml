@@ -1,4 +1,4 @@
-@model PharmacyManagementSystem.Models.Purchase
+@model PharmacyManagmentSystem.Models.Purchase
 
 @{
     ViewData["Title"] = "Purchase Details";
@@ -37,10 +37,10 @@
         <dd class="col-sm-9">
             @switch (Model.PaymentStatus)
             {
-                case PharmacyManagementSystem.Models.PaymentStatus.Paid:
+                case PharmacyManagmentSystem.Models.PaymentStatus.Paid:
                     <span class="badge bg-success">Paid</span>
                     break;
-                case PharmacyManagementSystem.Models.PaymentStatus.Partial:
+                case PharmacyManagmentSystem.Models.PaymentStatus.Partial:
                     <span class="badge bg-warning text-dark">Partial</span>
                     break;
                 default:

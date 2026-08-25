@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PharmacyManagmentSystem.Data;
 using PharmacyManagmentSystem.Models;
 

@@ -1,17 +1,28 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PharmacyManagementSystem.Models;
+using PharmacyManagmentSystem.Models;
 
-namespace PharmacyManagementSystem.Data
+namespace PharmacyManagmentSystem.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
+        // Existing team tables
+        public DbSet<Customer> Customers { get; set; }
 
+        public DbSet<Sale> Sales { get; set; }
+
+        public DbSet<SaleItem> SaleItems { get; set; }
+
+        // Inventory tables
         public DbSet<Medicine> Medicines { get; set; }
+
         public DbSet<MedicineCategory> MedicineCategories { get; set; }
+
+        public DbSet<Batch> Batches { get; set; }
+
+        public DbSet<StockHistory> StockHistories { get; set; }
+
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
         public DbSet<PurchaseItem> PurchaseItems { get; set; }
@@ -22,50 +33,40 @@ namespace PharmacyManagementSystem.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Unique index on Purchase.InvoiceNumber
-            modelBuilder.Entity<Purchase>()
-                .HasIndex(p => p.InvoiceNumber)
-                .IsUnique();
+            // Sale decimal fields
+            modelBuilder.Entity<Sale>()
+                .Property(s => s.Subtotal)
+                .HasPrecision(18, 2);
 
-            // Unique index on Prescription.PrescriptionNumber
-            modelBuilder.Entity<Prescription>()
-                .HasIndex(p => p.PrescriptionNumber)
-                .IsUnique();
+            modelBuilder.Entity<Sale>()
+                .Property(s => s.DiscountPercentage)
+                .HasPrecision(5, 2);
 
-            // Supplier -> Purchases: Restrict delete (prevent deleting supplier with purchases)
-            modelBuilder.Entity<Purchase>()
-                .HasOne(p => p.Supplier)
-                .WithMany(s => s.Purchases)
-                .HasForeignKey(p => p.SupplierId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Sale>()
+                .Property(s => s.DiscountAmount)
+                .HasPrecision(18, 2);
 
-            // Purchase -> PurchaseItems: Cascade delete
-            modelBuilder.Entity<PurchaseItem>()
-                .HasOne(pi => pi.Purchase)
-                .WithMany(p => p.PurchaseItems)
-                .HasForeignKey(pi => pi.PurchaseId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Sale>()
+                .Property(s => s.TotalAmount)
+                .HasPrecision(18, 2);
 
-            // PurchaseItem -> Medicine: Restrict delete
-            modelBuilder.Entity<PurchaseItem>()
-                .HasOne(pi => pi.Medicine)
-                .WithMany()
-                .HasForeignKey(pi => pi.MedicineId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // SaleItem decimal fields
+            modelBuilder.Entity<SaleItem>()
+                .Property(s => s.UnitPrice)
+                .HasPrecision(18, 2);
 
-            // Prescription -> PrescriptionItems: Cascade delete
-            modelBuilder.Entity<PrescriptionItem>()
-                .HasOne(pi => pi.Prescription)
-                .WithMany(p => p.PrescriptionItems)
-                .HasForeignKey(pi => pi.PrescriptionId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<SaleItem>()
+                .Property(s => s.TotalPrice)
+                .HasPrecision(18, 2);
 
-            // PrescriptionItem -> Medicine: Restrict delete
-            modelBuilder.Entity<PrescriptionItem>()
-                .HasOne(pi => pi.Medicine)
-                .WithMany()
-                .HasForeignKey(pi => pi.MedicineId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Inventory Medicine decimal fields
+            modelBuilder.Entity<Medicine>()
+                .Property(m => m.PurchasePrice)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<Medicine>()
+                .Property(m => m.SellingPrice)
+                .HasPrecision(10, 2);
         }
     }
 }

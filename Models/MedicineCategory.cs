@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace PharmacyManagementSystem.Models
+namespace PharmacyManagmentSystem.Models
 {
     public class MedicineCategory
     {

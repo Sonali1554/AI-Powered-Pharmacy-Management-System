@@ -1,4 +1,4 @@
-namespace PharmacyManagementSystem.Models
+namespace PharmacyManagmentSystem.Models
 {
     public enum PrescriptionStatus
     {
