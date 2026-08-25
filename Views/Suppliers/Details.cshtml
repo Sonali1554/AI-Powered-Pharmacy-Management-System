@@ -1,0 +1,99 @@
+@model PharmacyManagementSystem.Models.Supplier
+
+@{
+    ViewData["Title"] = "Supplier Details";
+}
+
+<h1>Supplier Details</h1>
+
+<div>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">
+            Supplier Name
+        </dt>
+        <dd class="col-sm-9">
+            @Model.SupplierName
+        </dd>
+
+        <dt class="col-sm-3">
+            Contact Person
+        </dt>
+        <dd class="col-sm-9">
+            @Model.ContactPerson
+        </dd>
+
+        <dt class="col-sm-3">
+            Email
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Email
+        </dd>
+
+        <dt class="col-sm-3">
+            Phone
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Phone
+        </dd>
+
+        <dt class="col-sm-3">
+            Address
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Address
+        </dd>
+
+        <dt class="col-sm-3">
+            City
+        </dt>
+        <dd class="col-sm-9">
+            @Model.City
+        </dd>
+
+        <dt class="col-sm-3">
+            State
+        </dt>
+        <dd class="col-sm-9">
+            @Model.State
+        </dd>
+
+        <dt class="col-sm-3">
+            GST Number
+        </dt>
+        <dd class="col-sm-9">
+            @Model.GSTNumber
+        </dd>
+
+        <dt class="col-sm-3">
+            Status
+        </dt>
+        <dd class="col-sm-9">
+            @if (Model.IsActive)
+            {
+                <span class="badge bg-success">Active</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary">Inactive</span>
+            }
+        </dd>
+
+        <dt class="col-sm-3">
+            Total Purchases
+        </dt>
+        <dd class="col-sm-9">
+            @Model.Purchases.Count
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Edit"
+       asp-route-id="@Model.SupplierId"
+       class="btn btn-primary">Edit</a>
+
+    <a asp-action="Index"
+       class="btn btn-secondary">Back to List</a>
+</div>

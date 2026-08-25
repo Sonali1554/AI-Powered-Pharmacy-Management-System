@@ -1,91 +1,110 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PharmacyManagmentSystem.Data;
-using PharmacyManagmentSystem.Models;
+using Microsoft.EntityFrameworkCore;
+using PharmacyManagementSystem.Data;
+using PharmacyManagementSystem.Models;
 
-namespace PharmacyManagmentSystem.Controllers
+namespace PharmacyManagementSystem.Controllers
 {
-    public class InventoryController : Controller
+    public class MedicineCategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public InventoryController(ApplicationDbContext context)
+        public MedicineCategoriesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var batches = _context.Batches.ToList();
+            return View(await _context.MedicineCategories.ToListAsync());
+        }
 
-            var stockHistory = _context.StockHistories
-                .OrderByDescending(h => h.Date)
-                .ToList();
-
-            ViewBag.StockHistory = stockHistory;
-
-            return View(batches);
+        public IActionResult Create()
+        {
+            return View();
         }
 
         [HttpPost]
-        public IActionResult AddStock(
-            string medicineName,
-            string batchNumber,
-            int quantity,
-            DateTime expiryDate,
-            int minimumStock)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(MedicineCategory medicineCategory)
         {
-            var batch = new Batch
+            if (ModelState.IsValid)
             {
-                BatchNumber = batchNumber,
-                Quantity = quantity,
-                ExpiryDate = expiryDate,
-                MinimumStock = minimumStock
-            };
-
-            _context.Batches.Add(batch);
-            _context.SaveChanges();
-
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public IActionResult UpdateStock(
-            string batchNumber,
-            int amount,
-            string action)
-        {
-            var batch = _context.Batches
-                .FirstOrDefault(b => b.BatchNumber == batchNumber);
-
-            if (batch != null)
-            {
-                if (action == "add")
-                {
-                    batch.Quantity += amount;
-                }
-                else if (action == "remove")
-                {
-                    batch.Quantity -= amount;
-
-                    if (batch.Quantity < 0)
-                    {
-                        batch.Quantity = 0;
-                    }
-                }
-
-                var history = new StockHistory
-                {
-                    BatchNumber = batchNumber,
-                    QuantityChange = amount,
-                    Action = action,
-                    Date = DateTime.Now
-                };
-
-                _context.StockHistories.Add(history);
-                _context.SaveChanges();
+                _context.MedicineCategories.Add(medicineCategory);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction("Index");
+            return View(medicineCategory);
+        }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var medicineCategory = await _context.MedicineCategories.FindAsync(id);
+
+            if (medicineCategory == null)
+            {
+                return NotFound();
+            }
+
+            return View(medicineCategory);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, MedicineCategory medicineCategory)
+        {
+            if (id != medicineCategory.CategoryId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Update(medicineCategory);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(medicineCategory);
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var medicineCategory = await _context.MedicineCategories
+                .FirstOrDefaultAsync(m => m.CategoryId == id);
+
+            if (medicineCategory == null)
+            {
+                return NotFound();
+            }
+
+            return View(medicineCategory);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var medicineCategory = await _context.MedicineCategories.FindAsync(id);
+
+            if (medicineCategory != null)
+            {
+                _context.MedicineCategories.Remove(medicineCategory);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

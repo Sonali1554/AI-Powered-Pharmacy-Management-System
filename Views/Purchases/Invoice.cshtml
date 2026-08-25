@@ -1,0 +1,168 @@
+@model PharmacyManagementSystem.Models.Purchase
+
+@{
+    ViewData["Title"] = "Purchase Invoice";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice - @Model.InvoiceNumber</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body { background: #fff; }
+        .invoice-header { border-bottom: 3px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .invoice-title { font-size: 2rem; font-weight: bold; color: #333; }
+        .invoice-meta dt { font-weight: 600; }
+        .table-invoice th { background-color: #f8f9fa; }
+        .total-section { background-color: #f8f9fa; padding: 15px; border-radius: 5px; }
+        @@media print {
+            .no-print { display: none !important; }
+            body { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-4">
+        <div class="no-print mb-3">
+            <button class="btn btn-primary" onclick="window.print()">🖨️ Print Invoice</button>
+            <a href="/Purchases/Details/@Model.PurchaseId" class="btn btn-secondary">Back to Details</a>
+            <a href="/Purchases" class="btn btn-secondary">Back to List</a>
+        </div>
+
+        <div class="invoice-header">
+            <div class="row">
+                <div class="col-6">
+                    <div class="invoice-title">PURCHASE INVOICE</div>
+                    <p class="text-muted mb-0">Pharmacy Management System</p>
+                </div>
+                <div class="col-6 text-end">
+                    <h4>Invoice #: @Model.InvoiceNumber</h4>
+                    <p class="mb-0">Date: @Model.PurchaseDate.ToString("dd-MM-yyyy")</p>
+                    <p class="mb-0">
+                        Status:
+                        @switch (Model.PaymentStatus)
+                        {
+                            case PharmacyManagementSystem.Models.PaymentStatus.Paid:
+                                <span class="badge bg-success">Paid</span>
+                                break;
+                            case PharmacyManagementSystem.Models.PaymentStatus.Partial:
+                                <span class="badge bg-warning text-dark">Partial</span>
+                                break;
+                            default:
+                                <span class="badge bg-danger">Pending</span>
+                                break;
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-6">
+                <h6 class="fw-bold">Supplier Details:</h6>
+                <p class="mb-0">@Model.Supplier?.SupplierName</p>
+                @if (!string.IsNullOrEmpty(Model.Supplier?.ContactPerson))
+                {
+                    <p class="mb-0">Contact: @Model.Supplier.ContactPerson</p>
+                }
+                @if (!string.IsNullOrEmpty(Model.Supplier?.Phone))
+                {
+                    <p class="mb-0">Phone: @Model.Supplier.Phone</p>
+                }
+                @if (!string.IsNullOrEmpty(Model.Supplier?.Email))
+                {
+                    <p class="mb-0">Email: @Model.Supplier.Email</p>
+                }
+                @if (!string.IsNullOrEmpty(Model.Supplier?.Address))
+                {
+                    <p class="mb-0">@Model.Supplier.Address</p>
+                }
+                @if (!string.IsNullOrEmpty(Model.Supplier?.City) || !string.IsNullOrEmpty(Model.Supplier?.State))
+                {
+                    <p class="mb-0">@Model.Supplier?.City@((!string.IsNullOrEmpty(Model.Supplier?.City) && !string.IsNullOrEmpty(Model.Supplier?.State)) ? ", " : "")@Model.Supplier?.State</p>
+                }
+                @if (!string.IsNullOrEmpty(Model.Supplier?.GSTNumber))
+                {
+                    <p class="mb-0">GST: @Model.Supplier.GSTNumber</p>
+                }
+            </div>
+        </div>
+
+        <table class="table table-bordered table-invoice">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Medicine</th>
+                    <th>Batch Number</th>
+                    <th>Expiry Date</th>
+                    <th class="text-end">Qty</th>
+                    <th class="text-end">Purchase Price</th>
+                    <th class="text-end">Selling Price</th>
+                    <th class="text-end">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int sno = 1;
+                }
+                @foreach (var item in Model.PurchaseItems)
+                {
+                    <tr>
+                        <td>@sno</td>
+                        <td>@item.Medicine?.MedicineName</td>
+                        <td>@item.BatchNumber</td>
+                        <td>@item.ExpiryDate.ToString("dd-MM-yyyy")</td>
+                        <td class="text-end">@item.Quantity</td>
+                        <td class="text-end">₹@item.PurchasePrice.ToString("N2")</td>
+                        <td class="text-end">₹@item.SellingPrice.ToString("N2")</td>
+                        <td class="text-end">₹@item.Amount.ToString("N2")</td>
+                    </tr>
+                    sno++;
+                }
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col-6"></div>
+            <div class="col-6">
+                <div class="total-section">
+                    <dl class="row mb-0">
+                        <dt class="col-6 text-end">Total Amount:</dt>
+                        <dd class="col-6 text-end">₹@Model.TotalAmount.ToString("N2")</dd>
+
+                        <dt class="col-6 text-end">Discount:</dt>
+                        <dd class="col-6 text-end">₹@Model.Discount.ToString("N2")</dd>
+
+                        <dt class="col-6 text-end">GST Amount:</dt>
+                        <dd class="col-6 text-end">₹@Model.GSTAmount.ToString("N2")</dd>
+
+                        <dt class="col-6 text-end border-top pt-2" style="font-size: 1.1rem;">Net Amount:</dt>
+                        <dd class="col-6 text-end border-top pt-2 fw-bold" style="font-size: 1.1rem;">₹@Model.NetAmount.ToString("N2")</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <div class="mt-4">
+                <h6 class="fw-bold">Notes:</h6>
+                <p>@Model.Notes</p>
+            </div>
+        }
+
+        <div class="row mt-5">
+            <div class="col-6">
+                <p class="border-top pt-2 d-inline-block" style="min-width: 200px;">Received By</p>
+            </div>
+            <div class="col-6 text-end">
+                <p class="border-top pt-2 d-inline-block" style="min-width: 200px;">Authorized Signature</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
