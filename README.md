@@ -316,26 +316,31 @@ This project provided hands-on experience with:
 
 ## 📸 Screenshots
 Home Screen:
+
 <img width="1600" height="794" alt="image" src="https://github.com/user-attachments/assets/fc35a141-ecff-4687-9f9b-c0ce77416970" />
 
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/eabbf816-dc2a-4e34-8e17-48c7b4bd6cef" />
 
 Pharmacy Invoice:
+
 <img width="1600" height="1000" alt="image" src="https://github.com/user-attachments/assets/45670716-0dec-49d5-8cbb-7f0c29c9d086" />
 
 Medicine:
 <img width="1600" height="804" alt="image" src="https://github.com/user-attachments/assets/93a14cb5-2c09-4ca5-b851-cca4f8b55e9c" />
 
 Addition of Medicine:
+
 <img width="1600" height="808" alt="image" src="https://github.com/user-attachments/assets/9f7cd059-95fd-4f53-953e-39e03d994495" />
 <img width="1600" height="808" alt="image" src="https://github.com/user-attachments/assets/394e79bf-e5c3-4828-a676-bd9269285d55" />
 <img width="1600" height="808" alt="image" src="https://github.com/user-attachments/assets/40fb2b84-6f8b-406f-84bf-0a8e5d4cae47" />
 
 Inventory & Stock Management:
+
 <img width="1017" height="522" alt="image" src="https://github.com/user-attachments/assets/c861d811-590e-407d-97d7-7a47195c20e3" />
 <img width="1017" height="478" alt="image" src="https://github.com/user-attachments/assets/1f91035c-bc6d-4483-87fb-b52a98641378" />
 
 Overall Output:
+
 <img width="1054" height="1250" alt="image" src="https://github.com/user-attachments/assets/6b12e8db-d26e-4113-949e-17b5c1d0a3bf" />
 <img width="1600" height="922" alt="image" src="https://github.com/user-attachments/assets/50821c56-7f16-43c7-ae42-5ce47a25370e" />
 <img width="1600" height="484" alt="image" src="https://github.com/user-attachments/assets/065fe9fb-1822-4a29-8b6c-c02c753816c7" />
