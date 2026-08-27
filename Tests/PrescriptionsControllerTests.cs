@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using PharmacyManagementSystem.Controllers;
 using PharmacyManagementSystem.Data;
 using PharmacyManagementSystem.Models;
@@ -15,6 +16,7 @@ namespace PharmacyManagementSystem.Tests
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: dbName)
+                .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
                 .Options;
             var context = new ApplicationDbContext(options);
             context.Database.EnsureCreated();
