@@ -350,12 +350,4 @@ Overall Output:
 
 ---
 
-## 👩‍💻 Author
-
-### Sonali Kumari
-
-**GitHub:** Sonali1554
-
----
-
 ⭐ If you find this project useful, consider giving the repository a star.
