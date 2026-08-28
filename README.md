@@ -2,6 +2,9 @@
 
 ### A Smart Web-Based Solution for Medicine, Inventory & Pharmacy Operations
 
+Deployes link
+https://ai-powered-pharmacy-management-system.onrender.com/
+
 ## 📌 Overview
 
 The **AI-Powered Pharmacy Management System** is a web-based application developed using **ASP.NET Core MVC and C#** to simplify and organize pharmacy operations.
