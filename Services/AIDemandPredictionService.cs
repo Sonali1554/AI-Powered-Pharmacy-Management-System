@@ -26,7 +26,7 @@ namespace PharmacyManagmentSystem.Services
             // 1. Fetch historical sales data for the medicine
             var salesData = await GetHistoricalSalesDataAsync(medicineName);
 
-            if (salesData.Count < 5)
+            if (salesData.Count <= 5)
             {
                 // Not enough data for time series forecasting, return average
                 return (float)salesData.Average(s => s.Quantity) * daysToPredict;
