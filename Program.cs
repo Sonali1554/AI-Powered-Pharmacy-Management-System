@@ -37,6 +37,9 @@ builder.Services.AddControllersWithViews();
 // Add SignalR for real-time updates
 builder.Services.AddSignalR();
 
+// Register AI Demand Prediction Service
+builder.Services.AddScoped<PharmacyManagmentSystem.Services.AIDemandPredictionService>();
+
 // ===============================
 // BUILD APP
 // ===============================

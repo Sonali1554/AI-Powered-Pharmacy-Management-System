@@ -1,0 +1,719 @@
+@{
+    ViewData["Title"] = "AI Analytics Dashboard";
+}
+
+<style>
+    /* Glassmorphism Cards */
+    .glass-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        animation: fadeUp 0.8s ease-out forwards;
+        opacity: 0;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 30px 60px -15px rgba(0, 242, 254, 0.15);
+        border-color: rgba(0, 242, 254, 0.2);
+    }
+
+    /* Staggered Animations */
+    .glass-card:nth-child(1) { animation-delay: 0.1s; }
+    .glass-card:nth-child(2) { animation-delay: 0.2s; }
+    .glass-card:nth-child(3) { animation-delay: 0.3s; }
+    .glass-card:nth-child(4) { animation-delay: 0.4s; }
+    .chart-container-1 { animation-delay: 0.5s; opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
+    .chart-container-2 { animation-delay: 0.6s; opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
+    .table-container-1 { animation-delay: 0.7s; opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
+    .table-container-2 { animation-delay: 0.8s; opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
+
+    @@keyframes fadeUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* KPI Specifics */
+    .kpi-title {
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .kpi-value {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--text-main);
+        line-height: 1.2;
+    }
+
+    .kpi-icon-wrapper {
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(28, 104, 227, 0.1), rgba(29, 179, 110, 0.05));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.5s ease;
+    }
+
+    .glass-card:hover .kpi-icon-wrapper {
+        transform: scale(1.2) rotate(-15deg);
+        background: linear-gradient(135deg, rgba(28, 104, 227, 0.15), rgba(29, 179, 110, 0.1));
+    }
+
+    .kpi-icon {
+        font-size: 4rem;
+        color: rgba(28, 104, 227, 0.15);
+    }
+
+    /* Header */
+    .dashboard-header {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        animation: fadeIn 1s ease-out;
+    }
+
+    .header-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(120deg, var(--accent-primary), var(--accent-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+        line-height: 1.1;
+    }
+
+    .header-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        margin-top: 5px;
+        letter-spacing: 1px;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Refresh Button */
+    .btn-cyber {
+        background: rgba(28, 104, 227, 0.1);
+        color: var(--accent-primary);
+        border: 1px solid var(--accent-primary);
+        padding: 10px 24px;
+        border-radius: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 15px rgba(28, 104, 227, 0.15);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-cyber:hover {
+        background: var(--accent-primary);
+        color: #ffffff;
+        box-shadow: 0 0 25px rgba(28, 104, 227, 0.3);
+        transform: translateY(-2px);
+    }
+
+    /* Tables */
+    .cyber-table {
+        width: 100%;
+        color: var(--text-main);
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+
+    .cyber-table th {
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+        padding: 12px 20px;
+        border: none;
+    }
+
+    .cyber-table td {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 16px 20px;
+        border: none;
+        transition: all 0.2s ease;
+    }
+    
+    .cyber-table tbody tr {
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .cyber-table td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+    .cyber-table td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+    .cyber-table tbody tr:hover td {
+        background: rgba(28, 104, 227, 0.05);
+        transform: scale(1.01);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-color); }
+    ::-webkit-scrollbar-thumb { background: rgba(28, 104, 227, 0.3); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+
+    /* Chart Containers */
+    .chart-wrapper {
+        position: relative;
+        height: 320px;
+        width: 100%;
+    }
+    
+    .chart-header {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .chart-header i {
+        color: var(--accent-primary);
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="dashboard-header">
+        <div>
+            <h1 class="header-title">Nexus AI Intelligence</h1>
+            <div class="header-subtitle">Advanced Neural Pharmacy Analytics</div>
+        </div>
+        <button class="btn-cyber" onclick="loadDashboardData(); this.querySelector('i').classList.add('fa-spin'); setTimeout(() => this.querySelector('i').classList.remove('fa-spin'), 1000);">
+            <i class="fas fa-sync-alt"></i> Sync Data
+        </button>
+    </div>
+
+    <!-- KPIs Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card">
+                <div class="kpi-title"><i class="fas fa-wallet text-info"></i> Gross Revenue</div>
+                <div class="kpi-value" id="kpiTotalRevenue">₹0.00</div>
+                <div class="kpi-icon-wrapper"><i class="fas fa-rupee-sign kpi-icon"></i></div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card">
+                <div class="kpi-title"><i class="fas fa-file-prescription text-info"></i> Prescriptions</div>
+                <div class="kpi-value" id="kpiTotalSales">0</div>
+                <div class="kpi-icon-wrapper"><i class="fas fa-pills kpi-icon"></i></div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card">
+                <div class="kpi-title"><i class="fas fa-users text-info"></i> Active Patients</div>
+                <div class="kpi-value" id="kpiTotalCustomers">0</div>
+                <div class="kpi-icon-wrapper"><i class="fas fa-heartbeat kpi-icon"></i></div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card">
+                <div class="kpi-title"><i class="fas fa-chart-line text-info"></i> Avg Order Value</div>
+                <div class="kpi-value" id="kpiAvgOrderValue">₹0.00</div>
+                <div class="kpi-icon-wrapper"><i class="fas fa-shopping-cart kpi-icon"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-8 chart-container-1">
+            <div class="glass-card h-100">
+                <div class="chart-header">
+                    <i class="fas fa-wave-square"></i> Financial Trajectory
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="revenueTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 chart-container-2">
+            <div class="glass-card h-100">
+                <div class="chart-header">
+                    <i class="fas fa-fingerprint"></i> Transaction Modalities
+                </div>
+                <div class="chart-wrapper d-flex align-items-center justify-content-center">
+                    <canvas id="paymentMethodChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4 chart-container-1">
+            <div class="glass-card h-100">
+                <div class="chart-header">
+                    <i class="fas fa-sort-amount-up"></i> High-Volume Therapeutics
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="topMedicinesVolumeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 chart-container-2">
+            <div class="glass-card h-100">
+                <div class="chart-header">
+                    <i class="fas fa-coins"></i> Premium Revenue Drivers
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="topMedicinesRevenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 chart-container-1">
+            <div class="glass-card h-100" style="border-color: rgba(255, 99, 132, 0.5);">
+                <div class="chart-header">
+                    <i class="fas fa-brain" style="color: #ff6384;"></i> AI 30-Day Demand Forecast
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="aiDemandPredictionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Tables Row -->
+    <div class="row g-4">
+        <div class="col-lg-7 table-container-1">
+            <div class="glass-card h-100">
+                <div class="chart-header">
+                    <i class="fas fa-microchip"></i> AI Restock Engine
+                </div>
+                <div class="table-responsive">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th>Therapeutic Agent</th>
+                                <th>Volume Dispensed</th>
+                                <th>Velocity Indicator</th>
+                                <th>Neural Analysis</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reorderTableBody">
+                            <tr><td colspan="4" class="text-center py-5"><i class="fas fa-circle-notch fa-spin text-info fs-2"></i></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 table-container-2">
+            <div class="glass-card h-100">
+                <div class="chart-header">
+                    <i class="fas fa-crown"></i> Priority Patient Matrix
+                </div>
+                <div class="table-responsive">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Lifetime Value</th>
+                                <th>Encounters</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topCustomersTableBody">
+                            <tr><td colspan="3" class="text-center py-5"><i class="fas fa-circle-notch fa-spin text-info fs-2"></i></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- SignalR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Global Chart Defaults for Medical Theme
+        Chart.defaults.color = '#718096';
+        Chart.defaults.font.family = "'Outfit', sans-serif";
+        Chart.defaults.scale.grid.color = 'rgba(0, 0, 0, 0.05)';
+        Chart.defaults.scale.grid.borderColor = 'transparent';
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(11, 15, 25, 0.9)';
+        Chart.defaults.plugins.tooltip.titleColor = '#fff';
+        Chart.defaults.plugins.tooltip.padding = 12;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.borderColor = 'rgba(0, 242, 254, 0.3)';
+
+        let revenueTrendChart, paymentMethodChart, topMedicinesVolumeChart, topMedicinesRevenueChart;
+
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+
+        // SignalR Real-Time Connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/analyticsHub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("UpdateDashboard", () => {
+            console.log("Real-time update received! Refreshing dashboard...");
+            // Add a visual flair to the sync button
+            const syncBtn = document.querySelector('.btn-cyber i');
+            if(syncBtn) {
+                syncBtn.classList.add('fa-spin', 'text-warning');
+                setTimeout(() => syncBtn.classList.remove('fa-spin', 'text-warning'), 2000);
+            }
+            loadDashboardData();
+        });
+
+        connection.start().catch(err => console.error("SignalR Connection Error: ", err));
+
+        // Helper to animate numbers rapidly
+        function animateValue(obj, start, end, duration, isCurrency) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // Easing out cubic
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                const current = start + (end - start) * easeProgress;
+                
+                if (isCurrency) {
+                    obj.innerHTML = '₹' + current.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                } else {
+                    obj.innerHTML = Math.floor(current).toLocaleString();
+                }
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        async function loadDashboardData() {
+            await Promise.all([
+                loadSummaryStats(),
+                loadRevenueTrends(),
+                loadPaymentMethods(),
+                loadTopMedicinesVolume(),
+                loadTopMedicinesRevenue(),
+                loadReorderRecommendations(),
+                loadTopCustomers(),
+                loadAiDemandPredictions()
+            ]);
+        }
+
+        async function loadSummaryStats() {
+            try {
+                const response = await fetch('/Analytics/GetSummaryStats');
+                const data = await response.json();
+                
+                animateValue(document.getElementById('kpiTotalRevenue'), 0, data.totalRevenue, 1500, true);
+                animateValue(document.getElementById('kpiTotalSales'), 0, data.totalSalesCount, 1500, false);
+                animateValue(document.getElementById('kpiTotalCustomers'), 0, data.totalCustomers, 1500, false);
+                animateValue(document.getElementById('kpiAvgOrderValue'), 0, data.avgOrderValue, 1500, true);
+            } catch (error) {
+                console.error("Error loading summary stats", error);
+            }
+        }
+
+        async function loadRevenueTrends() {
+            try {
+                const response = await fetch('/Analytics/GetRevenueTrends');
+                const data = await response.json();
+                
+                const labels = data.map(d => d.date);
+                const revenueData = data.map(d => d.revenue);
+
+                const ctx = document.getElementById('revenueTrendChart').getContext('2d');
+                if(revenueTrendChart) revenueTrendChart.destroy();
+                
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(28, 104, 227, 0.5)'); // Truemeds Blue
+                gradient.addColorStop(1, 'rgba(28, 104, 227, 0.0)');
+
+                revenueTrendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Revenue (₹)',
+                            data: revenueData,
+                            borderColor: '#1c68e3', // Blue
+                            backgroundColor: gradient,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#1c68e3',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading revenue trends", error);
+            }
+        }
+
+        async function loadPaymentMethods() {
+            try {
+                const response = await fetch('/Analytics/GetPaymentMethodsBreakdown');
+                const data = await response.json();
+                
+                const labels = data.map(d => d.paymentMethod);
+                const values = data.map(d => d.count);
+
+                const ctx = document.getElementById('paymentMethodChart').getContext('2d');
+                if(paymentMethodChart) paymentMethodChart.destroy();
+                
+                paymentMethodChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: [
+                                '#1c68e3', // Truemeds Blue
+                                '#1db36e', // Truemeds Green
+                                '#3b82f6', // Light Blue
+                                '#10b981'  // Light Green
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 10
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '80%',
+                        plugins: {
+                            legend: { position: 'right', labels: { color: '#64748b', usePointStyle: true, padding: 20, font: { family: 'Outfit' } } }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading payment methods", error);
+            }
+        }
+
+        async function loadTopMedicinesVolume() {
+            try {
+                const response = await fetch('/Analytics/GetTopMedicinesByVolume');
+                const data = await response.json();
+                
+                const labels = data.map(d => d.medicineName);
+                const counts = data.map(d => d.totalQuantity);
+
+                const ctx = document.getElementById('topMedicinesVolumeChart').getContext('2d');
+                if(topMedicinesVolumeChart) topMedicinesVolumeChart.destroy();
+                
+                const gradientBar = ctx.createLinearGradient(0, 0, 0, 400);
+                gradientBar.addColorStop(0, '#4facfe');
+                gradientBar.addColorStop(1, '#00f2fe');
+
+                topMedicinesVolumeChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Units Sold',
+                            data: counts,
+                            backgroundColor: '#1db36e', // Truemeds Green
+                            borderRadius: 6,
+                            barThickness: 20
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading volume chart", error);
+            }
+        }
+
+        async function loadTopMedicinesRevenue() {
+            try {
+                const response = await fetch('/Analytics/GetTopMedicinesByRevenue');
+                const data = await response.json();
+                
+                const labels = data.map(d => d.medicineName);
+                const amounts = data.map(d => d.totalRevenue);
+
+                const ctx = document.getElementById('topMedicinesRevenueChart').getContext('2d');
+                if(topMedicinesRevenueChart) topMedicinesRevenueChart.destroy();
+
+                topMedicinesRevenueChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: amounts,
+                            backgroundColor: [
+                                '#1c68e3', // Blue
+                                '#1db36e', // Green
+                                '#3b82f6', // Light Blue
+                                '#10b981'  // Light Green
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            y: { grid: { display: false } }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading revenue chart", error);
+            }
+        }
+
+        async function loadReorderRecommendations() {
+            try {
+                const response = await fetch('/Analytics/GetReorderRecommendations');
+                const data = await response.json();
+                const tbody = document.getElementById('reorderTableBody');
+                tbody.innerHTML = '';
+                
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4">Inventory matrix stabilized.</td></tr>';
+                    return;
+                }
+
+                data.forEach((item, index) => {
+                    let velocityBadge = '';
+                    if (item.velocity === 'Very High') {
+                        velocityBadge = '<span style="background: rgba(255, 99, 132, 0.2); color: #ff6384; padding: 4px 10px; border-radius: 12px; font-weight: bold; border: 1px solid rgba(255, 99, 132, 0.5);"><i class="fas fa-fire-alt me-1"></i> VERY HIGH</span>';
+                    } else if (item.velocity === 'High') {
+                        velocityBadge = '<span style="background: rgba(255, 159, 64, 0.2); color: #ff9f40; padding: 4px 10px; border-radius: 12px; font-weight: bold; border: 1px solid rgba(255, 159, 64, 0.5);"><i class="fas fa-fire me-1"></i> HIGH</span>';
+                    } else {
+                        velocityBadge = '<span style="background: rgba(75, 192, 192, 0.2); color: #4bc0c0; padding: 4px 10px; border-radius: 12px; font-weight: bold; border: 1px solid rgba(75, 192, 192, 0.5);"><i class="fas fa-leaf me-1"></i> MED</span>';
+                    }
+
+                    const row = `<tr style="animation: fadeUp 0.5s ease-out forwards; animation-delay: ${index * 0.1}s; opacity: 0;">
+                        <td class="fw-bold" style="color: var(--text-main)"><i class="fas fa-capsules me-2" style="color: var(--accent-primary)"></i>${item.medicineName}</td>
+                        <td style="color: var(--text-main)">${item.totalSold}</td>
+                        <td>${velocityBadge}</td>
+                        <td class="text-muted"><i class="fas fa-brain me-2 opacity-50" style="color: var(--accent-primary)"></i>${item.reason}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) {
+                document.getElementById('reorderTableBody').innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">Neural link failed.</td></tr>';
+            }
+        }
+
+        let aiDemandPredictionChart;
+
+        async function loadAiDemandPredictions() {
+            try {
+                const response = await fetch('/Analytics/GetAiDemandPredictions');
+                const data = await response.json();
+                
+                const labels = data.map(d => d.medicineName);
+                const values = data.map(d => d.predictedDemand);
+
+                const ctx = document.getElementById('aiDemandPredictionChart').getContext('2d');
+                if(aiDemandPredictionChart) aiDemandPredictionChart.destroy();
+                
+                const gradientBar = ctx.createLinearGradient(0, 0, 0, 400);
+                gradientBar.addColorStop(0, '#ff9a9e');
+                gradientBar.addColorStop(1, '#fecfef');
+
+                aiDemandPredictionChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Predicted Next 30 Days (Units)',
+                            data: values,
+                            backgroundColor: '#ff6384',
+                            borderRadius: 6,
+                            barThickness: 20
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading AI Demand Predictions chart", error);
+            }
+        }
+
+        async function loadTopCustomers() {
+            try {
+                const response = await fetch('/Analytics/GetTopCustomers');
+                const data = await response.json();
+                const tbody = document.getElementById('topCustomersTableBody');
+                tbody.innerHTML = '';
+                
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4">No patient data.</td></tr>';
+                    return;
+                }
+
+                data.forEach((item, index) => {
+                    const row = `<tr style="animation: fadeUp 0.5s ease-out forwards; animation-delay: ${index * 0.1}s; opacity: 0;">
+                        <td class="fw-bold" style="color: var(--text-main)"><i class="fas fa-fingerprint me-2 opacity-50" style="color: var(--accent-primary)"></i>${item.customerName}</td>
+                        <td style="color: var(--accent-secondary); font-weight: bold; letter-spacing: 1px;">₹${item.totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td><span style="background: rgba(28, 104, 227, 0.1); padding: 4px 12px; border-radius: 12px; color: var(--accent-primary); font-weight: 600;">${item.salesCount}</span></td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) {
+                document.getElementById('topCustomersTableBody').innerHTML = '<tr><td colspan="3" class="text-center text-danger py-4">Neural link failed.</td></tr>';
+            }
+        }
+    </script>
+}
